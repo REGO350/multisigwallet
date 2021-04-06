@@ -18,6 +18,10 @@ contract Wallet{
     }
     Request[] requests;
     
+    event TransferRequestCreated(uint _id, address _initiator, address _recipient, uint _amount);
+    event ApprovalRecieved(uint _id, address _approver, uint _approvals);
+    event TransferApproved(uint _id);
+    
     constructor(address[] memory _addresses, uint _minApprovals){
         for(uint i=0;i<_addresses.length;i++){
             owners.push(_addresses[i]);
@@ -45,6 +49,7 @@ contract Wallet{
     function transferRequest(address _recipient, uint _amount) public onlyOwners{
         require(balance >= _amount, "Balance not sufficient");
         uint n = requests.length;
+        emit TransferRequestCreated(n, msg.sender, _recipient, _amount);
         while(tmp.length!=0){
             tmp.pop();
         }
@@ -67,6 +72,7 @@ contract Wallet{
             }
         }
         require(firstVote, "You already accepted this request!");
+        emit ApprovalRecieved(_id, msg.sender, i+1);
         requests[_id].approvers.push(msg.sender);
         if(i + 1 >= minApprovals){
             transfer(_id);
@@ -75,6 +81,7 @@ contract Wallet{
     
     function transfer(uint _id) private{
         require(balance >= requests[_id].amount, "Balance not sufficient");
+        emit TransferApproved(_id);
         requests[_id].accepted = true;
         balance -= requests[_id].amount;
         payable(requests[_id].recipient).transfer(requests[_id].amount);
@@ -88,6 +95,3 @@ contract Wallet{
         return owners; 
     }
 }
-
-
-
