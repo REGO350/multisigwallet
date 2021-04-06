@@ -15,5 +15,6 @@ Approve transfer request:
 click the orange approveTransfer button
 
 Note:  
-* Only one transfer request at a time. 
-* Double voting does not work.
+* Original version support only one transfer request at a time. V2 supports multiple transfer requests. 
+* Double voting will not work.
+
